@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en" ng-app="myApp">
+<head>
+  <meta charset="UTF-8">
+  <title>Angular Registration</title>
+  <meta name="viewport" content="width=device-width, user-scalable=no">
+
+  <style>
+
+    @import url(https://fonts.googleapis.com/css?family=Open+Sans);
+    html {
+      font-family: 'Open Sans', sans-serif;
+      background-color: #eee;
+      color: #333;
+      padding: 1.75em;
+      box-sizing: border-box;
+    }
+
+    * {
+      box-sizing: inherit;
+    }
+    *:before, *:after {
+      box-sizing: inherit;
+    }
+
+    .demo {
+      max-width: 800px;
+      border: solid 5px #00a3ff;
+      padding: 1em;
+      font-size: 1em;
+      margin: 0 auto;
+      margin-top: 1em;
+      position: relative;
+    }
+
+    code {
+      background-color: white;
+      padding: 2px;
+    }
+
+    .explanation {
+      max-width: 800px;
+      margin: 0 auto;
+      margin-top: 2em;
+      border-top: solid 3px;
+      padding-top: 1em;
+    }
+
+    .container {
+      max-width: 400px;
+      background-color: black;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+    }
+    .container div {
+      background-color: white;
+      width: 100%;
+      display: none;
+    }
+    .container img {
+      width: 100%;
+      height: auto;
+    }
+
+    button {
+      position: absolute;
+    }
+
+    .next {
+      right: 5px;
+    }
+
+    .prev {
+      left: 5px;
+    }
+
+  </style>
+
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')</script>
+
+
+  <script>
+
+    $(window).load(function(){
+
+      var currentIndex = 0,
+          items = $('.container div'),
+          itemAmt = items.length;
+
+      function cycleItems() {
+        // .eq() takes an integer, ie currentIndex = 0;
+        var item = $('.container div').eq(currentIndex);
+        // hide all the items
+        items.hide();
+        // display the current index item, ie 0
+        item.css('display','inline-block');
+      }
+
+      var autoSlide = setInterval(function() {
+        // increment the currentIndex every 3 seconds
+        // so that it always references the next item div
+        currentIndex += 1;
+        // if the index is greater than the length of the array
+        // reset currentIndex back to 0, the first item
+        if (currentIndex > itemAmt - 1) {
+          currentIndex = 0;
+        }
+        cycleItems();
+      }, 3000);
+
+      // manually cycle through the slides and
+      // clear the auto cycle interval method
+      $('.next').click(function() {
+        clearInterval(autoSlide);
+        currentIndex += 1;
+        if (currentIndex > itemAmt - 1) {
+          currentIndex = 0;
+        }
+        cycleItems();
+      });
+
+      // Same as next but reverse the index
+      $('.prev').click(function() {
+        clearInterval(autoSlide);
+        currentIndex -= 1;
+        if (currentIndex < 0) {
+          currentIndex = itemAmt - 1;
+        }
+        cycleItems();
+      });
+    });
+
+
+  </script>
+
+</head>
+<body>
+  <section class="demo">
+    <button class="next">Next</button>
+    <button class="prev">Previous</button>
+    <div class="container">
+      <div style="display: inline-block;">
+        <img src="https://placeimg.com/400/200/people"/>
+      </div>
+      <div>
+        <img src="https://placeimg.com/400/200/any"/>
+      </div>
+      <div>
+        <img src="https://placeimg.com/400/200/nature"/>
+      </div>
+      <div>
+        <img src="https://placeimg.com/400/200/architecture"/>
+      </div>
+      <div>
+        <img src="https://placeimg.com/400/200/animals"/>
+      </div>
+      <div>
+        <img src="https://placeimg.com/400/200/people"/>
+      </div>
+      <div>
+        <img src="https://placeimg.com/400/200/tech"/>
+      </div>
+    </div>
+  </section>
+
+  <div class="explanation">
+    Building a slideshow like pattern that can accurately cycle through a number of unknown divs, forwards and backwards. Trying to use as little code as possible. Leave a comment if you see a way to do it better!
+  </div>
+
+</body>
+</html>
