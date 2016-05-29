@@ -163,11 +163,11 @@
         slide_count = ul.children().length, // array of slides
         slide_width = slide_count * 100.00,
         slide_width_pc = 100.0 / slide_count, // % width of each slide
-        slide_index = 0, // default set index to 0
-
+        slide_index = 2, // default set index to 0
         first_slide = ul.find("li:first-child"),
         last_slide = ul.find("li:last-child"),
-        thumbsArray = [];
+        thumbsArray = [],
+        max_slide_thumbs = 5;
 
     // Clone the last slide and add as first li element
     last_slide.clone().prependTo(ul);
@@ -265,6 +265,8 @@
       });
     }
 
+    slide(slide_index);
+
     // Generate the thumbnails
     // ==========================
     // slice the first and last items from the thumbs array
@@ -274,7 +276,7 @@
     var thumbList = "<div class='thumbs'><ul>";
     for(var i=0; i< thumbsArray.length; i++) {
       thumbList += "<li>";
-      thumbList += "<img src='" + thumbsArray[i] + "' width='" + (100 / slide_count) + "%'>";
+      thumbList += "<img src='" + thumbsArray[i] + "'>";
       thumbList += "</li>";
     }
     thumbList += "</ul></div>";
@@ -282,8 +284,12 @@
     // Add the thumbs to the DOM
     $slider.after(thumbList);
 
-    // set the slide index when click the thumbnail
-    var thumbItem = $('.thumbs').find('li');
+
+    // set the width of each thumb item
+    var thumbItem = $('.thumbs').find("li"),
+        thumbWidth = 100.0 / max_slide_thumbs;
+    thumbItem.css("width", thumbWidth + "%");
+
 
     // pass the thumb index as new slide index
     // to the slide() function
@@ -299,16 +305,16 @@
       // loop through thumbs and compare index with passed in newIndex
       thumbItem.each(function(i) {
 
+        // Style the active thumb
+        // active thumb is the thumb index which matches the slide index
         if (i == newIndex) {
-          console.log($(this) + " with index " + i + ' matches newIndex: ' + newIndex);
-
           thumbItem.css("opacity", ".7");
           $(this).css("opacity", "1");
         }
-
       });
     }
 
+    // pass default slide Index to style correct thumb on page load
     styleActiveThumb(slide_index);
 
   });
