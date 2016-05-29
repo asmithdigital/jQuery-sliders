@@ -116,6 +116,7 @@
     text-align:center;
     opacity: 0;
     z-index: 2;
+    cursor: pointer;
   }
 
   .slider button.prev {
@@ -160,6 +161,7 @@
     var $slider = $(".slider"),
         ul = $slider.find("ul"),
         slide_count = ul.children().length, // array of slides
+        slide_width = slide_count * 100.00,
         slide_width_pc = 100.0 / slide_count, // % width of each slide
         slide_index = 0, // default set index to 0
 
@@ -176,7 +178,11 @@
     // move the ul to the left equal to the width
     // of the newly prepended slide, so that the first slide
     // is hidden to the left of the view
-    ul.css("margin-left", "-100%");
+
+    ul.css({
+      "margin-left": "-100%",
+      "width": slide_width + "%"
+    });
 
     // set the left position of each slide percentage
     // based on the % width of each index in the loop
@@ -253,12 +259,15 @@
         // reset the slide index to the new passed in slide index
         slide_index = new_slide_index;
         console.log('Global slide index reset to: ' + slide_index);
+
+        styleActiveThumb(slide_index);
+
       });
     }
 
     // Generate the thumbnails
     // ==========================
-    // slice the first and last items from the array
+    // slice the first and last items from the thumbs array
     var thumbsArray = thumbsArray.slice( 1, -1 );
 
     // Build the thumbs markup from the thumbs array
@@ -276,17 +285,31 @@
     // set the slide index when click the thumbnail
     var thumbItem = $('.thumbs').find('li');
 
-    // Attach click handler to each image and
     // pass the thumb index as new slide index
-    thumbItem.each(function(){
-      console.log($(this).index());
-      $(this).bind('click', function(){
-        console.log($(this).index());
-        slide($(this).index());
-      });
+    // to the slide() function
+    thumbItem.click(function(){
+      var thumbIndex = $(this).index();
+      slide(thumbIndex);
+      console.log(thumbIndex);
     });
 
+    // style the thumb which matches the slide array index
+    function styleActiveThumb(newIndex) {
 
+      // loop through thumbs and compare index with passed in newIndex
+      thumbItem.each(function(i) {
+
+        if (i == newIndex) {
+          console.log($(this) + " with index " + i + ' matches newIndex: ' + newIndex);
+
+          thumbItem.css("opacity", ".7");
+          $(this).css("opacity", "1");
+        }
+
+      });
+    }
+
+    styleActiveThumb(slide_index);
 
   });
 
@@ -301,6 +324,17 @@
 
   <div class="slider">
     <ul>
+      <li>
+        <img src="images/thermometer.jpg" class="slider__image">
+        <div class="content">Slide One</div>
+      </li>
+      <li>
+        <img src="images/building.jpg">
+        <div class="content"><a href="http://imageslidermaker.com">Slide Two</a></div>
+      </li>
+      <li>
+        <img src="images/green-bottles.jpg">
+      </li>
       <li>
         <img src="images/thermometer.jpg" class="slider__image">
         <div class="content">Slide One</div>
