@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Angular Registration</title>
+  <meta name="viewport" content="width=device-width, user-scalable=no">
+</head>
+
+<style>
+  body {
+    background-color: #ccc;
+  }
+
+  .container {
+    margin: 0 auto;
+    width: 80%;
+    background-color: #fff;
+    min-height: 400px;
+  }
+
+  .slider {
+    width: 100%;
+  }
+
+  .slider ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .slider li img {
+    width: 100%;
+    border: none;
+  }
+
+  .slider {
+    width: 100%;
+    overflow: hidden;
+    height: 400px;
+    position: relative;
+  }
+
+  .slider ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    position: absolute;
+    width: 300%;
+    height: 100%;
+    top: 0;
+  }
+
+  .slider li {
+    padding: 0;
+    margin: 0;
+    width: 33.333333%;
+    height: 100%;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+  }
+
+  .slider li img {
+    border: none;
+    width: 100%;
+    min-height: 100%;
+  }
+  .slider button {
+    position: absolute;
+    display: block;
+    box-sizing: border-box;
+    border: none;
+    outline: none;
+    top: 0;
+    bottom: 0;
+    width: 20%;
+    background-color: rgba(0, 0, 0, 0.3);
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    text-align:center;
+    opacity: 0;
+    z-index: 2;
+  }
+
+  .slider button.prev {
+    left: 0;
+  }
+
+  .slider button.next {
+    right: 0;
+  }
+
+  .slider button:hover, .slider button:active {
+    opacity: 1.0;
+  }
+
+  .slider .content {
+    z-index: 3;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3em;
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    line-height: 3em;
+    padding: 0 1em;
+    font-size: 1.5em;
+  }
+
+  .slider .content a {
+    color: inherit;
+  }
+</style>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')</script>
+
+<script>
+
+  $(function() {
+
+    var ul = $(".slider ul");
+    var slide_count = ul.children().length; // array of slides
+    var slide_width_pc = 100.0 / slide_count; // % width of each slide
+    var slide_index = 0; // default set index to 0
+
+    // set the left position of each slide percentage
+    // based on the % width of each index in the loop
+    // which matches the slide width array
+    // - this removes the need for a width in CSS
+    ul.find("li").each(function(indx) {
+      var left_percent = (slide_width_pc * indx) + "%";
+      $(this).css({"left":left_percent});
+      $(this).css({width:(100 / slide_count) + "%"});
+    });
+
+    // Pass in negative 1 to index integer to slide()
+    $(".slider .prev").click(function() {
+      console.log("prev button clicked");
+      slide(slide_index - 1);
+    });
+
+    // Pass in positive 1 to index integer to slide()
+    $(".slider .next").click(function() {
+      console.log("next button clicked");
+      slide(slide_index + 1);
+    });
+
+    // return the function if the slide index is less than 0
+    // or greater than the length of the slide array
+    function slide(new_slide_index) {
+
+      if(new_slide_index < 0 || new_slide_index >= slide_count) return;
+
+      // Set animate the left margin of the ul by a multiple of 100%
+      // and the integer passed in, (ie 1 = -100%;)
+      var margin_left_pc = (new_slide_index * (-100)) + "%";
+
+      console.log(margin_left_pc);
+
+      ul.animate({"margin-left": margin_left_pc}, 400, function() {
+        // reset the slide index to the new passed in slide index
+        slide_index = new_slide_index;
+
+        console.log(slide_index);
+
+      });
+    }
+
+  });
+
+</script>
+
+
+<body>
+
+<h1>Slider</h1>
+
+<div class="container">
+
+  <div class="slider">
+    <ul>
+      <li>
+        <img src="images/thermometer.jpg" />
+        <div class="content">Slide One</div>
+      </li>
+      <li>
+        <img src="images/building.jpg" />
+        <div class="content"><a href="http://imageslidermaker.com">Slide Two</a></div>
+      </li>
+      <li>
+        <img src="images/green-bottles.jpg" />
+      </li>
+    </ul>
+    <button class="prev">prev</button>
+    <button class="next">next</button>
+  </div>
+
+
+</div>
+
+</body>
+</html>
