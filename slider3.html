@@ -174,6 +174,9 @@
       // and the integer passed in, (ie 1 = -100%;)
       var margin_left_pc = (new_slide_index * (-100) - 100) + "%";
 
+      console.log('New slide index passed in: ' + new_slide_index);
+      console.log('Margin left percentage of ul: ' + margin_left_pc);
+
       // only call the callback function after the animatiin slide has complete
       // this is why we append and prepend slides to the slide array
       // so that the animation can appear smmoth because the slide exists
@@ -181,14 +184,19 @@
       // then the ul margin left gets reset to the actual relevent slide (first/last)
       ul.animate({"margin-left": margin_left_pc}, 400, function() {
 
+        console.log('Initial animation complete');
+
         // if the index is the first slide [0]
         // - at the first slide and click previous button
         // ul margin left set to slide array length * -100%
         // and set integer to the last slide (not the appended slide)
         // ie, 3 slides, margin-left -300%;
         if(new_slide_index < 0) {
-          ul.css("margin-left", ((slide_count) * (-100)) + "%");
+          var leftMagrinSetTo = (slide_count) * (-100);
+          ul.css("margin-left", leftMagrinSetTo + '%');
           new_slide_index = slide_count - 1;
+
+          console.log('New margin left set to: ' + leftMagrinSetTo);
         }
 
         // if the index is e1ual to the length of the index array
@@ -198,11 +206,12 @@
         else if(new_slide_index >= slide_count) {
           ul.css("margin-left", "-100%");
           new_slide_index = 0;
+          console.log('New left margin set to: -100%');
         }
 
         // reset the slide index to the new passed in slide index
         slide_index = new_slide_index;
-        console.log(slide_index);
+        console.log('Global slide index reset to: ' + slide_index);
       });
     }
 
