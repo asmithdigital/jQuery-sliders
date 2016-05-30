@@ -158,8 +158,7 @@
     $slideImage.click(function () {
 
       var imageSrc = $(this).attr('src'),
-        imageIndex = $(this).parent().index(),
-        remainingThumbs = (lengthImages - imageIndex) - 1;
+          imageIndex = $(this).parent().index():
 
       // Fade out the main image
       $mainImage.fadeOut(function () {
@@ -194,17 +193,8 @@
 
           $mainImage.attr('src', imageSrc);
 
-          var diffRemainLength = remainingThumbs - lengthImages;
-
-          if (remainingThumbs > lengthImages) {
-            $slides.animate({
-              'margin-left': '-=' + widthImg * remainingThumbs
-            }, 1000);
-          }
-
         }
       }).fadeIn(1000);
-
 
     });
 
