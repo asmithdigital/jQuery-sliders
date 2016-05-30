@@ -15,7 +15,6 @@
     margin: 0 auto;
     width: 80%;
     background-color: #fff;
-    min-height: 400px;
   }
 
   .slider {
@@ -36,7 +35,6 @@
   .slider {
     width: 100%;
     overflow: hidden;
-    height: 400px;
     position: relative;
   }
 
@@ -70,7 +68,6 @@
   .thumbs {
     width: 100%;
     overflow: hidden;
-    height: 100px;
     position: relative;
   }
 
@@ -162,6 +159,9 @@
         ul = $slider.find("ul"),
         slide_count = ul.children().length, // array of slides
         slide_width = slide_count * 100.00,
+        slide_height = 400,
+        new_slide_height = slide_height,
+        thumb_height = slide_height,
         slide_width_pc = 100.0 / slide_count, // % width of each slide
         slide_index,
         first_slide = ul.find("li:first-child"),
@@ -169,8 +169,7 @@
         thumbsArray = [],
         max_slide_thumbs = 5,
         active_class = "active";
-
-
+    
     // Clone the last slide and add as first li element
     last_slide.clone().prependTo(ul);
 
@@ -198,21 +197,33 @@
     // - this removes the need for a width in CSS
     ul.find("li").each(function(indx) {
 
-      var left_percent = (slide_width_pc * indx) + "%";
       // store the images in a thumbs array
       var image = $(this).find('img').attr('src');
       thumbsArray.push(image);
 
+      var left_percent = (slide_width_pc * indx) + "%";
       $(this).css({"left":left_percent});
       $(this).css({width:(100 / slide_count) + "%"});
 
-      if ($(this).hasClass("active")) {
-        console.log($(this), indx);
+      // Set the active slide index
+      if ($(this).hasClass(active_class)) {
         slide_index = indx - 1;
-        console.log(indx - 1);
       }
-    });
 
+      // find the height of each slide image
+      var slideImageHeight = $(this).find("img").height();
+
+      if (slideImageHeight < new_slide_height) {
+        new_slide_height = slideImageHeight;
+      }
+
+      if (new_slide_height < slide_height) {
+        $slider.height(new_slide_height);
+      } else {
+        $slider.height(slide_height);
+      }
+
+    });
 
     // Pass in negative 1 to index integer to slide()
     $(".slider .prev").click(function() {
@@ -227,10 +238,6 @@
     });
 
     function slide(new_slide_index) {
-
-      // return the function if the slide index is less than 0
-      // or greater than the length of the slide array
-      // if(new_slide_index < 0 || new_slide_index >= slide_count) return;
 
       // Set animate the left margin of the ul by a multiple of 100%
       // and the integer passed in, (ie 1 = -100%;)
@@ -301,8 +308,11 @@
 
 
     // set the width of each thumb item
-    var thumbItem = $('.thumbs').find("li"),
+    var $thumbs = $(".thumbs"),
+        thumbItem = $thumbs.find("li"),
         thumbWidth = 100.0 / max_slide_thumbs;
+
+    // Set the width of each thumb
     thumbItem.css("width", thumbWidth + "%");
 
 
@@ -328,6 +338,20 @@
         }
       });
     }
+
+    // Find the shortest thumbnail image and sets the parent div height
+    // get the height of each image
+    thumbItem.each(function() {
+      // get the height of each image
+      var imageHeight = $(this).find("img").height();
+      if(imageHeight < thumb_height) {
+        thumb_height = imageHeight;
+      }
+
+      // Set the thumbs height
+      $thumbs.css("height", thumb_height);
+
+    });
 
     // pass default slide Index to style correct thumb on page load
     styleActiveThumb(slide_index);
