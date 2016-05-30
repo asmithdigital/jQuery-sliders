@@ -178,7 +178,6 @@
     // move the ul to the left equal to the width
     // of the newly prepended slide, so that the first slide
     // is hidden to the left of the view
-
     ul.css({
       "margin-left": "-100%",
       "width": slide_width + "%"
@@ -198,6 +197,7 @@
       $(this).css({"left":left_percent});
       $(this).css({width:(100 / slide_count) + "%"});
     });
+
 
     // Pass in negative 1 to index integer to slide()
     $(".slider .prev").click(function() {
@@ -348,9 +348,6 @@
       <li>
         <img src="images/building.jpg">
         <div class="content"><a href="http://imageslidermaker.com">Slide Two</a></div>
-      </li>
-      <li>
-        <img src="images/green-bottles.jpg">
       </li>
     </ul>
     <button class="prev">prev</button>
