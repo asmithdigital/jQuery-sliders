@@ -1,0 +1,218 @@
+/**
+ * Slider plugin
+ *
+ * Generates thumbnails and slides continuously through slides.
+ * @TODO: setInterval() for auto sliding on page load
+ *
+ * Options:
+ *	-
+ *	-
+ *
+ * Made by Andrew Smith andrew.smith03@adelaide.edu.au
+ *
+ */
+;( function( $, window, document, undefined ) {
+  'use strict';
+
+
+  $.fn.slider = function (options) {
+
+    var defaults = {
+      ads_sources : ['ads/ad1.html', 'ads/ad2.html', 'ads/ad3.html', 'ads/ad4.html', 'ads/ad5.html'],
+      num_displayed : 2,
+      onAdLoaded : $.noop
+    };
+    
+    // Deep copy
+    var opts = $.extend(true, {}, defaults, options);
+
+    var $slider = this,
+        ul = $slider.find("ul"),
+        slide_count = ul.children().length, // array of slides
+        slide_width = slide_count * 100.00,
+        slide_width_pc = 100.0 / slide_count, // % width of each slide
+        slide_index,
+        first_slide = ul.find("li:first-child"),
+        last_slide = ul.find("li:last-child"),
+        thumbsArray = [],
+        max_slide_thumbs = 5,
+        active_class = "active",
+
+      num_displayed = opts.num_displayed,
+      ads_sources = opts.ads_sources;
+
+    
+    
+    // DO some simple type and options checking
+
+    // PLUGIN code goes here
+    // Clone the last slide and add as first li element
+    last_slide.clone().prependTo(ul);
+
+    // Clone the first slide and add as last li element
+    first_slide.clone().appendTo(ul);
+
+    // remove the active class from the newly cloned last slide
+    // if the first slide was set to active
+    last_slide = ul.find("li:last-child");
+    if (last_slide.attr( "class" ) === active_class) {
+      last_slide.removeAttr( "class" );
+    }
+
+    // move the ul to the left equal to the width
+    // of the newly prepended slide, so that the first slide
+    // is hidden to the left of the view
+    ul.css({
+      "margin-left": "-100%",
+      "width": slide_width + "%"
+    });
+
+    // set the left position of each slide percentage
+    // based on the % width of each index in the loop
+    // which matches the slide width array
+    // - this removes the need for a width in CSS
+    ul.find("li").each(function(indx) {
+
+      var left_percent = (slide_width_pc * indx) + "%";
+      // store the images in a thumbs array
+      var image = $(this).find('img').attr('src');
+      thumbsArray.push(image);
+
+      $(this).css({"left":left_percent});
+      $(this).css({width:(100 / slide_count) + "%"});
+
+      if ($(this).hasClass("active")) {
+        console.log($(this), indx);
+        slide_index = indx - 1;
+        console.log(indx - 1);
+      }
+    });
+
+
+    // Pass in negative 1 to index integer to slide()
+    $(".slider .prev").click(function() {
+      console.log("-- prev button clicked");
+      slide(slide_index - 1);
+    });
+
+    // Pass in positive 1 to index integer to slide()
+    $(".slider .next").click(function() {
+      console.log("++ next button clicked");
+      slide(slide_index + 1);
+    });
+
+    function slide(new_slide_index) {
+
+      // return the function if the slide index is less than 0
+      // or greater than the length of the slide array
+      // if(new_slide_index < 0 || new_slide_index >= slide_count) return;
+
+      // Set animate the left margin of the ul by a multiple of 100%
+      // and the integer passed in, (ie 1 = -100%;)
+      var margin_left_pc = (new_slide_index * (-100) - 100) + "%";
+
+      console.log('New slide index passed in: ' + new_slide_index);
+      console.log('Margin left percentage of ul: ' + margin_left_pc);
+
+      // only call the callback function after the animatiin slide has complete
+      // this is why we append and prepend slides to the slide array
+      // so that the animation can appear smmoth because the slide exists
+      // - otherwise there will be a white background flash without image
+      // then the ul margin left gets reset to the actual relevent slide (first/last)
+      ul.animate({"margin-left": margin_left_pc}, 400, function() {
+
+        console.log('Initial animation complete');
+
+        // if the index is the first slide [0]
+        // - at the first slide and click previous button
+        // ul margin left set to slide array length * -100%
+        // and set integer to the last slide (not the appended slide)
+        // ie, 3 slides, margin-left -300%;
+        if(new_slide_index < 0) {
+          var leftMagrinSetTo = (slide_count) * (-100);
+          ul.css("margin-left", leftMagrinSetTo + '%');
+          new_slide_index = slide_count - 1;
+
+          console.log('New margin left set to: ' + leftMagrinSetTo);
+        }
+
+        // if the index is e1ual to the length of the index array
+        // - at the last slide and click the next button
+        // reset the ul margin left to -100% (first slide)
+        // and reset integer to 0
+        else if(new_slide_index >= slide_count) {
+          ul.css("margin-left", "-100%");
+          new_slide_index = 0;
+          console.log('New left margin set to: -100%');
+        }
+
+        // reset the slide index to the new passed in slide index
+        slide_index = new_slide_index;
+        console.log('Global slide index reset to: ' + slide_index);
+
+        styleActiveThumb(slide_index);
+
+      });
+    }
+
+    slide(slide_index);
+
+    // Generate the thumbnails
+    // ==========================
+    // slice the first and last items from the thumbs array
+    var thumbsArray = thumbsArray.slice( 1, -1 );
+
+    // Build the thumbs markup from the thumbs array
+    var thumbList = "<div class='thumbs'><ul>";
+    for(var i=0; i< thumbsArray.length; i++) {
+      thumbList += "<li>";
+      thumbList += "<img src='" + thumbsArray[i] + "'>";
+      thumbList += "</li>";
+    }
+    thumbList += "</ul></div>";
+
+    // Add the thumbs to the DOM
+    $slider.after(thumbList);
+
+
+    // set the width of each thumb item
+    var thumbItem = $('.thumbs').find("li"),
+      thumbWidth = 100.0 / max_slide_thumbs;
+    thumbItem.css("width", thumbWidth + "%");
+
+
+    // pass the thumb index as new slide index
+    // to the slide() function
+    thumbItem.click(function(){
+      var thumbIndex = $(this).index();
+      slide(thumbIndex);
+      console.log(thumbIndex);
+    });
+
+    // style the thumb which matches the slide array index
+    function styleActiveThumb(newIndex) {
+
+      // loop through thumbs and compare index with passed in newIndex
+      thumbItem.each(function(i) {
+
+        // Style the active thumb
+        // active thumb is the thumb index which matches the slide index
+        if (i == newIndex) {
+          thumbItem.css("opacity", ".7");
+          $(this).css("opacity", "1");
+        }
+      });
+    }
+
+    // pass default slide Index to style correct thumb on page load
+    styleActiveThumb(slide_index);
+
+
+    console.log($slider);
+    // never break the chain
+    return $slider;
+
+  };
+
+
+} )( jQuery, window, document );

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Angular Registration</title>
+  <meta name="viewport" content="width=device-width, user-scalable=no">
+</head>
+
+<link type="text/css" rel="stylesheet" href="css/slider-plugin.css">
+
+<body>
+
+<h1>Slider</h1>
+
+<div class="container">
+
+  <div class="slider">
+    <ul>
+      <li>
+        <img src="images/thermometer.jpg" class="slider__image">
+        <div class="content">Slide One</div>
+      </li>
+      <li>
+        <img src="images/building.jpg">
+        <div class="content"><a href="http://imageslidermaker.com">Slide Two</a></div>
+      </li>
+      <li>
+        <img src="images/green-bottles.jpg">
+      </li>
+      <li class="active">
+        <img src="images/thermometer.jpg" class="slider__image">
+        <div class="content">Slide One</div>
+      </li>
+      <li>
+        <img src="images/building.jpg">
+        <div class="content"><a href="http://imageslidermaker.com">Slide Two</a></div>
+      </li>
+    </ul>
+    <button class="prev">prev</button>
+    <button class="next">next</button>
+  </div>
+
+</div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')</script>
+<script src="js/jquery.slider.js"></script>
+
+<script>
+  $(function() {
+    'use strict';
+
+    $('.slider').slider();
+
+  });
+
+</script>
+
+</body>
+</html>
