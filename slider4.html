@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Angular Registration</title>
+  <meta name="viewport" content="width=device-width, user-scalable=no">
+</head>
+
+<style>
+
+  .container {
+    margin: 0 auto;
+    width: 650px;
+    background-color: #fff;
+    min-height: 400px;
+  }
+
+  img {
+    max-width: 100%;
+    width: auto\9;
+    height: auto;
+    vertical-align: middle;
+    border: 0;
+    -ms-interpolation-mode: bicubic;
+  }
+
+  .c-banner-slider {
+    margin: 0 0 1.61538em;
+  }
+  .c-banner-slider__main-wrapper {
+    position: relative;
+  }
+  .c-banner-slider__nav-next-button {
+    position: absolute;
+    top: 50%;
+    right: 2%;
+  }
+  .c-banner-slider__nav-previous-button {
+    position: absolute;
+    top: 50%;
+    left: 2%;
+  }
+  .c-banner-slider__slider {
+    overflow: hidden;
+    position: relative;
+  }
+  .c-banner-slider__slides {
+    display: block;
+    width: 8000px;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
+  .c-banner-slider__slide {
+    float: left;
+    height: 120px;
+    padding: 0;
+  }
+  .c-banner-slider__slide img {
+    height: 100%;
+  }
+</style>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')</script>
+
+<script>
+
+  $(function() {
+    'use strict';
+
+    // Some jQuery objects
+    var $slider = $('.c-banner-slider'),
+      $slides = $('.c-banner-slider__slides'),
+      $slideImage = $slides.find('img'),
+      $mainImage = $('.c-banner-slider__main-image'),
+      $previousButton = $('.c-banner-slider__nav-previous-button'),
+      $nextButton = $('.c-banner-slider__nav-next-button');
+
+    // Store the src of the slide images in an array
+    var tn_array = $slideImage.map(function () {
+      return $(this).attr('src');
+    }).get();
+
+    // Some global variables
+    var lengthImages = tn_array.length, // length of the image list
+      currImage = 0,  // current image index
+      wrapperWidth = $slider.outerWidth(),
+      widthImg = wrapperWidth / 4, // width of an image in the list
+      bottomLength = 4, // number of images in bottom slide
+      indexDiff;
+
+    // set the first image of the list as the main image src
+    $mainImage.attr('src', tn_array[0]);
+
+    // Set the width of the thumbnails
+    $slideImage.css('width', widthImg);
+
+    // hide the previous button at the beginning
+    $previousButton.css('visibility', 'hidden');
+
+    // Next button functionality
+    $nextButton.click(function () {
+
+      // Fade out the main image
+      $mainImage.fadeOut('slow', function () {
+
+        // update current image to next item in array
+        currImage = currImage + 1;
+
+        // animate the left margin of slide list
+        $slides.animate({
+          'margin-left': '-=' + widthImg
+        }, 1000);
+        // Set the main image to the new currImg
+        $mainImage.attr('src', tn_array[currImage]);
+        //check whether the slider is at the end
+        if (currImage == lengthImages - 4) {
+          // If so, hide the next button
+          $nextButton.css('visibility', 'hidden');
+        }
+        // Show the previous button to visible when clicking the next button, if its hidden
+        if ($previousButton.css('visibility') == 'hidden') {
+          $previousButton.css('visibility', 'visible');
+        }
+      }).fadeIn(1000);
+    });
+
+    // Previous button functionality
+    $previousButton.click(function () {
+      // Fade out the main image
+      $mainImage.fadeOut('slow', function () {
+
+        // update current image to previous item in array
+        currImage = currImage - 1;
+
+        // animate the left margin of slide list
+        $slides.animate({
+          'margin-left': '+=' + widthImg
+        }, 1000);
+
+        // Set the main image to the new currImg
+        $mainImage.attr('src', tn_array[currImage]);
+
+        // check whether the slider is at the end
+        if (currImage == 0) {
+          // If so, hide the next button
+          $previousButton.css('visibility', 'hidden');
+        }
+        // Show the previous button to visible when clicking the next button, if its hidden
+        if ($nextButton.css('visibility') == 'hidden') {
+          $nextButton.css('visibility', 'visible');
+        }
+      }).fadeIn(1000);
+    });
+
+    // Animate slider when clicking thumbnails
+    $slideImage.click(function () {
+
+      var imageSrc = $(this).attr('src'),
+        imageIndex = $(this).parent().index(),
+        remainingThumbs = (lengthImages - imageIndex) - 1;
+
+      // Fade out the main image
+      $mainImage.fadeOut(function () {
+
+        // if the bottom length is 4 and the array of images is 6 then we only return tru if the clicked thumb index is <= 2
+        // this is because we do not want to slide to the left beyond the point of the last thumb image.
+        if (imageIndex <= lengthImages - bottomLength) {
+
+          indexDiff = currImage;
+          currImage = imageIndex;
+          indexDiff = Math.abs(indexDiff - currImage);
+
+          $slides.animate({
+            'margin-left': '-=' + widthImg * indexDiff
+          }, 1000);
+
+          // Update the main image source to the source of the thumb clicked on
+          $mainImage.attr('src', imageSrc);
+
+          if (imageIndex != 0) {
+            if ($previousButton.css("visibility") == "hidden") {
+              $previousButton.css("visibility", "visible");
+            }
+          }
+
+          if (imageIndex == lengthImages - bottomLength) {
+            if ($nextButton.css("visibility") == "visible") {
+              $nextButton.css("visibility", "hidden");
+            }
+          }
+        } else {
+
+          $mainImage.attr('src', imageSrc);
+
+          var diffRemainLength = remainingThumbs - lengthImages;
+
+          if (remainingThumbs > lengthImages) {
+            $slides.animate({
+              'margin-left': '-=' + widthImg * remainingThumbs
+            }, 1000);
+          }
+
+        }
+      }).fadeIn(1000);
+
+
+    });
+
+
+  });
+</script>
+
+<body>
+
+<div class="container">
+  <div class="c-banner-slider">
+    <div class="c-banner-slider__main-wrapper">
+      <img src="images/banner-demo/image1.jpg" alt="About Us"
+           class="c-banner-slider__main-image">
+      <div class="c-banner-slider__nav">
+        <img src="images/banner-demo/right-arrow.png"
+             class="c-banner-slider__nav-next-button img-responsive">
+        <img src="images/banner-demo/left-arrow.png"
+             class="c-banner-slider__nav-previous-button img-responsive">
+      </div>
+    </div>
+    <div class="c-banner-slider__slider">
+      <ul class="c-banner-slider__slides">
+        <li class="c-banner-slider__slide">
+          <img src="images/banner-demo/image1.jpg" alt="Image 1" width="200"/>
+        </li>
+        <li class="c-banner-slider__slide">
+          <img src="images/banner-demo/image2.jpg" alt="Image 2" width="200"/>
+        </li>
+        <li class="c-banner-slider__slide">
+          <img src="images/banner-demo/image3.jpg" alt="Image 3" width="200"/>
+        </li>
+        <li class="c-banner-slider__slide">
+          <img src="images/banner-demo/image4.jpg" alt="Image 4" width="200"/>
+        </li>
+        <li class="c-banner-slider__slide">
+          <img src="images/banner-demo/image5.jpg" alt="Image 5" width="200"/>
+        </li>
+        <li class="c-banner-slider__slide">
+          <img src="images/banner-demo/image6.jpg" alt="Image 6" width="200"/>
+        </li>
+      </ul>
+    </div>
+</div>
+
+</body>
+</html>
