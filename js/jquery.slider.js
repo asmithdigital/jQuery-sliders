@@ -5,8 +5,12 @@
  * @TODO: setInterval() for auto sliding on page load
  *
  * Options:
- *	-
- *	-
+ *	- max_number_slides (integer): max number of slides and thumbs
+ *	- active_class (string): sets the active slide and thumb
+ *	- previous_button_class (string): previous button class name
+ *	- next_button_class (string): next button class name
+ *	- thumbs_class (string): class name for generated thumbs markup
+ *	- onAdLoaded: (object): @TODO
  *
  * Made by Andrew Smith andrew.smith03@adelaide.edu.au
  *
@@ -26,26 +30,26 @@
       onAdLoaded: $.noop
     };
     
-    // Deep copy
+    // Deep copy true
     var opts = $.extend(true, {}, defaults, options);
 
     var $slider = this,
         ul = $slider.find("ul"),
         slide_count = ul.children().length, // array of slides
-        slide_width = slide_count * 100.00,
-        slide_height = 400,
+        slide_width = slide_count * 100.00, // sets the UL width to a multiple of each slide * 100%
+        slide_height = 400, // max height of the slide images
         new_slide_height = slide_height,
         thumb_height = slide_height,
         slide_width_pc = 100.0 / slide_count, // % width of each slide
-        slide_index,
+        slide_index, // will be used to define the active slide
         first_slide = ul.find("li:first-child"),
         last_slide = ul.find("li:last-child"),
-        thumbsArray = [],
+        thumbsArray = [], // initially empty thumbs array
 
         previous_button_class = opts.previous_button_class,
         next_button_class = opts.next_button_class,
         thumbs_class = opts.thumbs_class,
-        max_slide_thumbs = opts.max_slide_thumbs,
+        max_slide_thumbs = opts.max_slide_thumbs, // will decide the widths of each thumb
         active_class = opts.active_class;
 
     
@@ -63,15 +67,14 @@
     first_slide.clone().appendTo(ul);
 
     // remove the active class from the newly cloned last slide
-    // if the first slide was set to active
+    // if the first slide html class was set to active
     last_slide = ul.find("li:last-child");
     if (last_slide.attr( "class" ) === active_class) {
       last_slide.removeAttr( "class" );
     }
 
-    // move the ul to the left equal to the width
-    // of the newly prepended slide, so that the first slide
-    // is hidden to the left of the view
+    // move the ul to the left equal to the width of the newly prepended
+    // first slide, so that the first slide is hidden to the left of the view
     ul.css({
       "margin-left": "-100%",
       "width": slide_width + "%"
@@ -178,6 +181,7 @@
     // Generate the thumbnails
     // ==========================
     // slice the first and last items from the thumbs array
+    // because we cloned them above and we dont need them for the thumbs
     var thumbsArray = thumbsArray.slice( 1, -1 );
 
     // Build the thumbs markup from the thumbs array
@@ -243,7 +247,6 @@
     styleActiveThumb(slide_index);
 
 
-    console.log($slider);
     // never break the chain
     return $slider;
 
