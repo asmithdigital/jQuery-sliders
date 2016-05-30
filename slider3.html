@@ -163,17 +163,26 @@
         slide_count = ul.children().length, // array of slides
         slide_width = slide_count * 100.00,
         slide_width_pc = 100.0 / slide_count, // % width of each slide
-        slide_index = 2, // default set index to 0
+        slide_index,
         first_slide = ul.find("li:first-child"),
         last_slide = ul.find("li:last-child"),
         thumbsArray = [],
-        max_slide_thumbs = 5;
+        max_slide_thumbs = 5,
+        active_class = "active";
+
 
     // Clone the last slide and add as first li element
     last_slide.clone().prependTo(ul);
 
     // Clone the first slide and add as last li element
     first_slide.clone().appendTo(ul);
+
+    // remove the active class from the newly cloned last slide
+    // if the first slide was set to active
+    last_slide = ul.find("li:last-child");
+    if (last_slide.attr( "class" ) === active_class) {
+      last_slide.removeAttr( "class" );
+    }
 
     // move the ul to the left equal to the width
     // of the newly prepended slide, so that the first slide
@@ -196,6 +205,12 @@
 
       $(this).css({"left":left_percent});
       $(this).css({width:(100 / slide_count) + "%"});
+
+      if ($(this).hasClass("active")) {
+        console.log($(this), indx);
+        slide_index = indx - 1;
+        console.log(indx - 1);
+      }
     });
 
 
@@ -341,7 +356,7 @@
       <li>
         <img src="images/green-bottles.jpg">
       </li>
-      <li>
+      <li class="active">
         <img src="images/thermometer.jpg" class="slider__image">
         <div class="content">Slide One</div>
       </li>
