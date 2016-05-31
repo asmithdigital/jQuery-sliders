@@ -5,12 +5,12 @@
  *  @TODO: setInterval() for auto sliding on page load
  *
  *  Options:
- *	  - max_number_slides (integer): max number of slides and thumbs
- *	  - active_class (string): sets the active slide and thumb
- *	  - previous_button_class (string): previous button class name
- *	  - next_button_class (string): next button class name
- *    - thumbs_class (string): class name for generated thumbs markup
- *    - onAdLoaded: (object): @TODO
+ *  - max_number_slides (integer): max number of slides and thumbs
+ *  - active_class (string): sets the active slide and thumb
+ *  - previous_button_class (string): previous button class name
+ *  - next_button_class (string): next button class name
+ *  - thumbs_class (string): class name for generated thumbs markup
+ *  - onAdLoaded: (object): @TODO
  *
  *  Made by Andrew Smith andrew.smith03@adelaide.edu.au
  *
