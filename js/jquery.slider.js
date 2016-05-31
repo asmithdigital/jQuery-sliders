@@ -29,7 +29,7 @@
       thumbs_class: "thumbs",
       onAdLoaded: $.noop
     };
-    
+
     // Deep copy true
     var opts = $.extend(true, {}, defaults, options);
 
@@ -52,13 +52,13 @@
         max_slide_thumbs = opts.max_slide_thumbs, // will decide the widths of each thumb
         active_class = opts.active_class;
 
-    
-    
+
+
     // DO some simple type and options checking
     // ==================================================
 
 
-    // PLUGIN code goes here
+    // Slider init
     // ==================================================
     // Clone the last slide and add as first li element
     last_slide.clone().prependTo(ul);
@@ -114,6 +114,9 @@
 
     });
 
+
+    // Prev/next buttons init
+    // ==========================
     // Pass in negative 1 to index integer to slide()
     $(previous_button_class).click(function() {
       console.log("-- prev button clicked");
@@ -126,6 +129,72 @@
       slide(slide_index + 1);
     });
 
+
+    // Thumbnail Init
+    // ==========================
+    // slice the first and last items from the thumbs array
+    // because we cloned them above and we dont need them for the thumbs
+    var thumbsArray = thumbsArray.slice( 1, -1 );
+
+    // Build the thumbs markup from the thumbs array
+    var thumbList = "<div class='" + thumbs_class + "'><ul class='" + thumbs_class + "__list'>";
+    for(var i=0; i< thumbsArray.length; i++) {
+      thumbList += "<li class='" + thumbs_class + "__item'>";
+      thumbList += "<img src='" + thumbsArray[i] + "' class='" + thumbs_class + "__image'>";
+      thumbList += "</li>";
+    }
+    thumbList += "</ul></div>";
+
+    // Add the thumbs to the DOM
+    $slider.after(thumbList);
+
+
+    // set the width of each thumb item
+    var $thumbs = $("." + thumbs_class),
+      thumbItem = $thumbs.find("li"),
+      thumbWidth = 100.0 / max_slide_thumbs;
+
+    // Set the width of each thumb
+    thumbItem.css("width", thumbWidth + "%");
+
+
+    // pass the thumb index as new slide index
+    // to the slide() function
+    thumbItem.click(function(){
+      var thumbIndex = $(this).index();
+      slide(thumbIndex);
+      console.log(thumbIndex);
+    });
+
+    // Find the shortest thumbnail image and sets the parent div height
+    // get the height of each image
+    thumbItem.each(function() {
+      // get the height of each image
+      var imageHeight = $(this).find("img").height();
+      if(imageHeight < thumb_height) {
+        thumb_height = imageHeight;
+      }
+
+      // Set the thumbs height
+      $thumbs.css("height", thumb_height);
+
+    });
+
+
+
+
+    // Invoke the functions
+    // ==========================
+    slide(slide_index);
+    // pass default slide Index to style correct thumb on page load
+    styleActiveThumb(slide_index);
+
+
+
+
+
+    // Slide function
+    // ==========================
     function slide(new_slide_index) {
 
       // Set animate the left margin of the ul by a multiple of 100%
@@ -176,44 +245,11 @@
       });
     }
 
-    slide(slide_index);
 
-    // Generate the thumbnails
+
+
+    // Set active thumb function
     // ==========================
-    // slice the first and last items from the thumbs array
-    // because we cloned them above and we dont need them for the thumbs
-    var thumbsArray = thumbsArray.slice( 1, -1 );
-
-    // Build the thumbs markup from the thumbs array
-    var thumbList = "<div class='" + thumbs_class + "'><ul class='" + thumbs_class + "__list'>";
-    for(var i=0; i< thumbsArray.length; i++) {
-      thumbList += "<li class='" + thumbs_class + "__item'>";
-      thumbList += "<img src='" + thumbsArray[i] + "' class='" + thumbs_class + "__image'>";
-      thumbList += "</li>";
-    }
-    thumbList += "</ul></div>";
-
-    // Add the thumbs to the DOM
-    $slider.after(thumbList);
-
-
-    // set the width of each thumb item
-    var $thumbs = $("." + thumbs_class),
-      thumbItem = $thumbs.find("li"),
-      thumbWidth = 100.0 / max_slide_thumbs;
-
-    // Set the width of each thumb
-    thumbItem.css("width", thumbWidth + "%");
-
-
-    // pass the thumb index as new slide index
-    // to the slide() function
-    thumbItem.click(function(){
-      var thumbIndex = $(this).index();
-      slide(thumbIndex);
-      console.log(thumbIndex);
-    });
-
     // style the thumb which matches the slide array index
     function styleActiveThumb(newIndex) {
 
@@ -229,22 +265,8 @@
       });
     }
 
-    // Find the shortest thumbnail image and sets the parent div height
-    // get the height of each image
-    thumbItem.each(function() {
-      // get the height of each image
-      var imageHeight = $(this).find("img").height();
-      if(imageHeight < thumb_height) {
-        thumb_height = imageHeight;
-      }
 
-      // Set the thumbs height
-      $thumbs.css("height", thumb_height);
 
-    });
-
-    // pass default slide Index to style correct thumb on page load
-    styleActiveThumb(slide_index);
 
 
     // never break the chain
