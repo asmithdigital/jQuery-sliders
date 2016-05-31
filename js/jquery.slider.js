@@ -2,7 +2,12 @@
  *  slidie() slider plugin
  *
  *  Generates thumbnails and slides continuously through slides.
- *  @TODO: setInterval() for auto sliding on page load
+ *
+ *  @TODO:
+ *  - setInterval() for auto sliding on page load
+ *  - add touch events http://hammerjs.github.io/getting-started/
+ *  - use CSS transitions for animations
+ *  - resolve responsive layouts
  *
  *  Options:
  *  - max_number_slides (integer): max number of slides and thumbs
