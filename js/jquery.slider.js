@@ -23,7 +23,7 @@
  */
 // the semi-colon before function invocation is a safety net against concatenated
 // scripts and/or other plugins which may not be closed properly.
-;( function( $ ) {
+;( function( $, window, document, undefined ) {
   "use strict";
 
   // undefined is used here as the undefined global variable in ECMAScript 3 is
@@ -293,4 +293,4 @@
     } );
   };
 
-} )( jQuery );
+} )( jQuery, window, document );
