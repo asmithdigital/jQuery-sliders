@@ -19,13 +19,13 @@
   'use strict';
 
 
-  $.fn.slider = function (options) {
+  $.fn.slidie = function (options) {
 
     var defaults = {
       max_slide_thumbs: 5,
       active_class: "active",
-      previous_button_class: ".prev",
-      next_button_class: ".next",
+      previous_button_class: "prev",
+      next_button_class: "next",
       thumbs_class: "thumbs",
       onAdLoaded: $.noop
     };
@@ -53,9 +53,13 @@
         active_class = opts.active_class;
 
 
+    console.log(opts);
+
 
     // DO some simple type and options checking
     // ==================================================
+    
+    
 
 
     // Slider init
@@ -95,7 +99,7 @@
       $(this).css({width:(100 / slide_count) + "%"});
 
       // Set the active slide index
-      if ($(this).hasClass(active_class)) {
+      if ($(this).hasClass(opts.active_class)) {
         slide_index = indx - 1;
       }
 
@@ -118,13 +122,13 @@
     // Prev/next buttons init
     // ==========================
     // Pass in negative 1 to index integer to slide()
-    $(previous_button_class).click(function() {
+    $("." + previous_button_class).click(function() {
       console.log("-- prev button clicked");
       slide(slide_index - 1);
     });
 
     // Pass in positive 1 to index integer to slide()
-    $(next_button_class).click(function() {
+    $("." + next_button_class).click(function() {
       console.log("++ next button clicked");
       slide(slide_index + 1);
     });
