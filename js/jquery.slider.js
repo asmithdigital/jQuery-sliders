@@ -107,7 +107,7 @@
         // then the ul margin left gets reset to the actual relevent slide (first/last)
         ul.animate({"margin-left": margin_left_pc}, 400, function () {
 
-          console.log('Initial animation complete');
+            console.log('Initial animation complete');
 
           // if the index is the first slide [0]
           // - at the first slide and click previous button
@@ -179,6 +179,17 @@
       ul.css({
         "margin-left": "-100%",
         "width": slide_width + "%"
+      });
+
+      // Add swipe functionality
+      $el.swipe({
+        //Single swipe handler for left swipes
+        swipeLeft: function () {
+          slide(slide_index + 1);
+        },
+        swipeRight: function () {
+          slide(slide_index - 1);
+        }
       });
 
       // set the left position of each slide percentage
@@ -285,6 +296,7 @@
       slide(slide_index);
       // pass default slide Index to style correct thumb on page load
       styleActiveThumb(slide_index);
+
     }
 
   });
