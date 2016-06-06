@@ -63,6 +63,7 @@
       var thumbs_array = [];
       var tagClassRE = /^[A-Za-z][-_A-Za-z0-9]+$/;
 
+
       // Basic user validation
       // ==========================
 
@@ -81,15 +82,14 @@
       }
 
       // ensure max slides is integer and not greater than the default
-      if (!$.isNumeric(self.settings.max_slide_thumbs) && (self.settings.max_slide_thumbs > self._defaults.max_slide_thumbs)) {
-        self.settings.max_slide_thumbs = self._default.max_slide_thumbs;
+      if (!$.isNumeric(self.settings.max_slide_thumbs) || (self.settings.max_slide_thumbs > self._defaults.max_slide_thumbs)) {
+        self.settings.max_slide_thumbs = self._defaults.max_slide_thumbs;
       }
 
       // ensure auto-slide speed is integer
       if (!$.isNumeric(self.settings.autoslide_speed)) {
         self.settings.autoslide_speed = self._default.autoslide_speed;
       }
-
 
       // Slide function
       // ==========================
