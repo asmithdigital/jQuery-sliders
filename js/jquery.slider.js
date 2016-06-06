@@ -28,14 +28,14 @@
  */
 ;(function ($) {
   "use strict";
-  var pluginName = "slidie";
+  var pluginName = "ua_slidie";
   var defaults = {
     max_slide_thumbs: 5,
     auto_slide: true,
     autoslide_speed: 3000,
-    active_class: "active",
-    previous_button_class: "prev",
-    next_button_class: "next",
+    active_class: "is-active",
+    previous_button_class: "c-banner-slider__button-previous",
+    next_button_class: "c-banner-slider__button-next",
     thumbs_class: "thumbs"
   };
 
@@ -109,7 +109,7 @@
           if (new_slide_index < 0) {
             var left_magrin_set_to = (self.settings.max_slide_thumbs) * (-100);
             $ul.css("margin-left", left_magrin_set_to + '%');
-            new_slide_index = slide_count - 1;
+            new_slide_index = self.settings.max_slide_thumbs - 1;
           }
           else if (new_slide_index >= self.settings.max_slide_thumbs) {
             $ul.css("margin-left", "-100%");
@@ -126,8 +126,8 @@
       function styleActiveThumb(new_index) {
         $thumb_item.each(function (i) {
           if (i === new_index) {
-            $thumb_item.css("opacity", ".7");
-            $(this).css("opacity", "1");
+            $thumb_item.removeClass(self.settings.active_class);
+            $(this).addClass(self.settings.active_class);
           }
         });
       }
@@ -136,8 +136,8 @@
       $ul.find("li:nth-child(n+" + (self.settings.max_slide_thumbs + 1) + ")").remove();
 
       // Clone the first and last slide for smooth animation and remove the active class
-      $last_slide.clone().prependTo($ul).removeAttr("class", self.settings.active_class);
-      $first_slide.clone().appendTo($ul).removeAttr("class", self.settings.active_class);
+      $last_slide.clone().prependTo($ul).removeClass(self.settings.active_class);
+      $first_slide.clone().appendTo($ul).removeClass(self.settings.active_class);
 
       // set the initial slide margin and width
       $ul.css({
@@ -183,13 +183,12 @@
 
       });
 
-
       // Set up autoslide
-      if (self.settings.auto_slide) {
-        var auto_slide = setInterval(function() {
+      var auto_slide = setInterval(function () {
+        if (self.settings.auto_slide) {
           slide(slide_index + 1);
-        }, self.settings.autoslide_speed);
-      }
+        }
+      }, self.settings.autoslide_speed);
 
       // Generate thumbnail images
       // ==========================
