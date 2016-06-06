@@ -61,35 +61,43 @@
       var slide_width_pc = 100.0 / self.settings.max_slide_thumbs;
       var slide_index = 0;
       var thumbs_array = [];
-      var tagClassRE = /^[A-Za-z][-_A-Za-z0-9]+$/;
+      var tag_class_RE = /^[A-Za-z][-_A-Za-z0-9]+$/;
 
 
       // Basic user validation
       // ==========================
 
       // ensure class names are string
-      if (typeof self.settings.active_class !== 'string' || self.settings.active_class.match(tagClassRE) === null) {
+      if (typeof self.settings.active_class !== 'string' || self.settings.active_class.match(tag_class_RE) === null) {
         self.settings.active_class = self._defaults.active_class;
       }
-      if (typeof self.settings.previous_button_class !== 'string' || self.settings.active_class.match(tagClassRE) === null) {
+      if (typeof self.settings.previous_button_class !== 'string' || self.settings.active_class.match(tag_class_RE) === null) {
         self.settings.previous_button_class = self._defaults.previous_button_class;
       }
-      if (typeof self.settings.next_button_class !== 'string' || self.settings.active_class.match(tagClassRE) === null) {
+      if (typeof self.settings.next_button_class !== 'string' || self.settings.active_class.match(tag_class_RE) === null) {
         self.settings.next_button_class = self._defaults.next_button_class;
       }
-      if (typeof self.settings.thumbs_class !== 'string' || self.settings.active_class.match(tagClassRE) === null) {
+      if (typeof self.settings.thumbs_class !== 'string' || self.settings.active_class.match(tag_class_RE) === null) {
         self.settings.thumbs_class = self._defaults.thumbs_class;
       }
 
       // ensure max slides is integer and not greater than the default
       if (!$.isNumeric(self.settings.max_slide_thumbs) || (self.settings.max_slide_thumbs > self._defaults.max_slide_thumbs)) {
         self.settings.max_slide_thumbs = self._defaults.max_slide_thumbs;
+        slide_width = self.settings.max_slide_thumbs * 100.00;
+        slide_width_pc = 100.0 / self.settings.max_slide_thumbs;
       }
 
       // ensure auto-slide speed is integer
       if (!$.isNumeric(self.settings.autoslide_speed)) {
-        self.settings.autoslide_speed = self._default.autoslide_speed;
+        self.settings.autoslide_speed = self._defaults.autoslide_speed;
       }
+
+      // ensure auto_slide is boolean
+      if (typeof self.settings.auto_slide !== 'boolean') {
+        self.settings.auto_slide = self._defaults.auto_slide;
+      }
+
 
       // Slide function
       // ==========================
