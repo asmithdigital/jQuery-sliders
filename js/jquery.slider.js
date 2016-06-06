@@ -56,19 +56,40 @@
       var $ul = $el.find("ul");
       var $first_slide = $ul.find("li:first-child");
       var $last_slide = $ul.find("li:last-child");
-      var slide_count = $ul.children().length;
-      var slide_width = slide_count * 100.00;
+      var slide_width = self.settings.max_slide_thumbs * 100.00;
       var slide_height = 400;
-      var slide_width_pc = 100.0 / slide_count;
+      var slide_width_pc = 100.0 / self.settings.max_slide_thumbs;
       var slide_index = 0;
       var thumbs_array = [];
+      var tagClassRE = /^[A-Za-z][-_A-Za-z0-9]+$/;
 
+      // Basic user validation
+      // ==========================
 
-      if (self.settings.auto_slide) {
-        var auto_slide = setInterval(function() {
-          slide(slide_index + 1);
-        }, self.settings.autoslide_speed);
+      // ensure class names are string
+      if (typeof self.settings.active_class !== 'string' || self.settings.active_class.match(tagClassRE) === null) {
+        self.settings.active_class = self._defaults.active_class;
       }
+      if (typeof self.settings.previous_button_class !== 'string' || self.settings.active_class.match(tagClassRE) === null) {
+        self.settings.previous_button_class = self._defaults.previous_button_class;
+      }
+      if (typeof self.settings.next_button_class !== 'string' || self.settings.active_class.match(tagClassRE) === null) {
+        self.settings.next_button_class = self._defaults.next_button_class;
+      }
+      if (typeof self.settings.thumbs_class !== 'string' || self.settings.active_class.match(tagClassRE) === null) {
+        self.settings.thumbs_class = self._defaults.thumbs_class;
+      }
+
+      // ensure max slides is integer and not greater than the default
+      if (!$.isNumeric(self.settings.max_slide_thumbs) && (self.settings.max_slide_thumbs > self._defaults.max_slide_thumbs)) {
+        self.settings.max_slide_thumbs = self._default.max_slide_thumbs;
+      }
+
+      // ensure auto-slide speed is integer
+      if (!$.isNumeric(self.settings.autoslide_speed)) {
+        self.settings.autoslide_speed = self._default.autoslide_speed;
+      }
+
 
       // Slide function
       // ==========================
@@ -76,11 +97,11 @@
         var margin_left_pc = (new_slide_index * (-100) - 100) + "%";
         $ul.animate({"margin-left": margin_left_pc}, 400, function () {
           if (new_slide_index < 0) {
-            var left_magrin_set_to = (slide_count) * (-100);
+            var left_magrin_set_to = (self.settings.max_slide_thumbs) * (-100);
             $ul.css("margin-left", left_magrin_set_to + '%');
             new_slide_index = slide_count - 1;
           }
-          else if (new_slide_index >= slide_count) {
+          else if (new_slide_index >= self.settings.max_slide_thumbs) {
             $ul.css("margin-left", "-100%");
             new_slide_index = 0;
           }
@@ -100,6 +121,9 @@
           }
         });
       }
+
+      // Remove any slides outside the defined max_number_slides settings default variable
+      $ul.find("li:nth-child(n+" + (self.settings.max_slide_thumbs + 1) + ")").remove();
 
       // Clone the first and last slide for smooth animation and remove the active class
       $last_slide.clone().prependTo($ul).removeAttr("class", self.settings.active_class);
@@ -127,7 +151,7 @@
         // Give each slide its margin left %
         $(this).css({
           left: slide_left_percent,
-          width: (100 / slide_count) + "%"
+          width: (100 / self.settings.max_slide_thumbs) + "%"
         });
 
         // Set the initial index to the element with "active" class
@@ -147,6 +171,13 @@
         }
 
       });
+
+      // Set up autoslide
+      if (self.settings.auto_slide) {
+        var auto_slide = setInterval(function() {
+          slide(slide_index + 1);
+        }, self.settings.autoslide_speed);
+      }
 
       // Generate thumbnail images
       // ==========================
@@ -214,8 +245,6 @@
       });
 
       slide(slide_index);
-      styleActiveThumb(slide_index);
-
     }
   });
 
