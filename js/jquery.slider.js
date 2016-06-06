@@ -243,7 +243,7 @@
       // Add swipe functionality
       // ==========================
       $el.swipe({
-        //Single swipe handler for left swipes
+        // Single swipe handler for left swipes
         swipeLeft: function () {
           slide(slide_index + 1);
           clearInterval(auto_slide);
