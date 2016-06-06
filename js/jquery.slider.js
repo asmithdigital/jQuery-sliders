@@ -60,6 +60,8 @@
       var slide_height = 400;
       var slide_width_pc = 100.0 / self.settings.max_slide_thumbs;
       var slide_index = 0;
+      var new_slide_height = slide_height;
+      var thumb_height = slide_height;
       var thumbs_array = [];
       var tag_class_RE = /^[A-Za-z][-_A-Za-z0-9]+$/;
 
@@ -143,6 +145,7 @@
         width: slide_width + "%"
       });
 
+
       // Loop each image and set index,
       // positioning and build thumbs array
       // ==================================================
@@ -150,8 +153,6 @@
         var $image = $(this).find('img');
         var image_src = $image.attr('src');
         var slide_left_percent = (slide_width_pc * index) + "%";
-        var slide_image_height = $image.height();
-        var new_slide_height = slide_height;
 
         // Add each image src to the thumbs array
         thumbs_array.push(image_src);
@@ -166,10 +167,12 @@
         if ($(this).hasClass(self.settings.active_class)) {
           slide_index = index - 1;
         }
+
         // set the initial height of slide image height variable
-        if (slide_image_height < new_slide_height) {
-          new_slide_height = slide_image_height;
+        if ($image.height() < new_slide_height) {
+          new_slide_height = $image.height();
         }
+
         // set the slide list height to the shortest slide image
         if (new_slide_height < slide_height) {
           $el.height(new_slide_height);
@@ -179,6 +182,7 @@
         }
 
       });
+
 
       // Set up autoslide
       if (self.settings.auto_slide) {
@@ -212,7 +216,6 @@
       // set the height of each thumb image
       $thumb_item.each(function () {
         var image_height = $(this).find("img").height();
-        var thumb_height = slide_height;
         if (image_height < thumb_height) {
           thumb_height = image_height;
         }

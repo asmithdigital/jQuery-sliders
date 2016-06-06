@@ -8,6 +8,9 @@ body {
   background-color: #fff;
 }
 
+.slider-wrapper {
+  margin-bottom: 1.6em;
+}
 .slider {
   width: 100%;
 }
@@ -53,7 +56,6 @@ body {
 .slider li img {
   border: none;
   width: 100%;
-  min-height: 100%;
 }
 
 .thumbs {
@@ -76,9 +78,9 @@ body {
   padding: 0;
   margin: 0;
   width: 20%;
-  height: 100%;
   overflow: hidden;
   float: left;
+  transition: opacity 2s;
 }
 
 .thumbs li img {
