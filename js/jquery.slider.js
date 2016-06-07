@@ -5,6 +5,10 @@
  *
  *  Options:
  *  - max_number_slides (integer): max number of slides and thumbs
+ *  - auto_slide (boolean): whether to auto slide
+ *  - auto_slide_speed (integer): the speed of the slide
+ *  - auto_slide_delay (integer): the delay of the slider
+ *  - max_slide_height (integer): the max height of the slider
  *  - active_class (string): sets the active slide and thumb
  *  - previous_button_class (string): previous button class name
  *  - next_button_class (string): next button class name
@@ -19,8 +23,8 @@
   var defaults = {
     max_slide_thumbs: 5,
     auto_slide: true,
-    autoslide_speed: 400,
-    autoslide_delay: 3000,
+    auto_slide_speed: 400,
+    auto_slide_delay: 3000,
     max_slide_height: 400,
     active_class: "is-active",
     previous_button_class: "c-banner-slider__button-previous",
@@ -70,21 +74,27 @@
         self.settings.thumbs_class = self._defaults.thumbs_class;
       }
 
-      // ensure max slides is integer and not greater than the default
+      // ensure max slides is an integer and not greater than the default
       if (!$.isNumeric(self.settings.max_slide_thumbs) || (self.settings.max_slide_thumbs > self._defaults.max_slide_thumbs)) {
         self.settings.max_slide_thumbs = self._defaults.max_slide_thumbs;
         slide_width = self.settings.max_slide_thumbs * 100.00;
         slide_width_pc = 100.0 / self.settings.max_slide_thumbs;
       }
 
-      // ensure auto-slide speed is integer
-      if (!$.isNumeric(self.settings.autoslide_delay)) {
-        self.settings.autoslide_delay = self._defaults.autoslide_delay;
-      }
-
       // ensure auto_slide is boolean
       if (typeof self.settings.auto_slide !== 'boolean') {
         self.settings.auto_slide = self._defaults.auto_slide;
+      }
+
+      // ensure auto-slide speed, delay and max_slide_height is an integer
+      if (!$.isNumeric(self.settings.auto_slide_speed)) {
+        self.settings.auto_slide_speed = self._defaults.auto_slide_speed;
+      }
+      if (!$.isNumeric(self.settings.auto_slide_delay)) {
+        self.settings.auto_slide_delay = self._defaults.auto_slide_delay;
+      }
+      if (!$.isNumeric(self.settings.max_slide_height)) {
+        self.settings.max_slide_height = self._defaults.max_slide_height;
       }
 
       // Modify the DOM
@@ -153,7 +163,7 @@
         if (self.settings.auto_slide) {
           self.slide(self.slide_index + 1);
         }
-      }, self.settings.autoslide_delay);
+      }, self.settings.auto_slide_delay);
 
       // Prev/next buttons
       $("." + self.settings.previous_button_class).click(function () {
@@ -192,7 +202,7 @@
       var $ul = $el.find("ul");
       var margin_left_pc = (new_slide_index * (-100) - 100) + "%";
 
-      $ul.animate({"margin-left": margin_left_pc}, self.settings.autoslide_speed, function () {
+      $ul.animate({"margin-left": margin_left_pc}, self.settings.auto_slide_speed, function () {
         if (new_slide_index < 0) {
           var left_magrin_set_to = (self.settings.max_slide_thumbs) * (-100);
           $ul.css("margin-left", left_magrin_set_to + '%');
