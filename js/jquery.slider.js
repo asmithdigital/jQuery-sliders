@@ -3,6 +3,8 @@
  *
  *  Generates thumbnails and slides continuously through slides.
  *
+ *  @TODO: bug fix - active class being set to cloned list elements
+ *
  *  Options:
  *  - max_number_slides (integer): max number of slides and thumbs
  *  - auto_slide (boolean): whether to auto slide
@@ -97,7 +99,7 @@
         self.settings.max_slide_height = self._defaults.max_slide_height;
       }
 
-      // Modify the DOM
+      // Remove and clone slides
       // ==========================
 
       // Remove any slides outside the defined max_number_slides settings default variable
@@ -177,7 +179,6 @@
 
       // Swipe
       $el.swipe({
-        // Single swipe handler for left swipes
         swipeLeft: function () {
           self.slide(self.slide_index + 1);
           clearInterval(auto_slide);
@@ -192,7 +193,6 @@
       self.thumb_item.click(function () {
         var thumb_index = $(this).index();
         self.slide(thumb_index);
-        self.setActive(thumb_index);
         clearInterval(auto_slide);
       });
     },
@@ -201,6 +201,9 @@
       var $el = $(this.element);
       var $ul = $el.find("ul");
       var margin_left_pc = (new_slide_index * (-100) - 100) + "%";
+
+      // Set the new active thumb before the animation starts
+      self.setActive(new_slide_index);
 
       $ul.animate({"margin-left": margin_left_pc}, self.settings.auto_slide_speed, function () {
         if (new_slide_index < 0) {
@@ -212,7 +215,7 @@
           $ul.css("margin-left", "-100%");
           new_slide_index = 0;
         }
-        self.setActive(new_slide_index);
+
         self.slide_index = new_slide_index;
 
         return this;
