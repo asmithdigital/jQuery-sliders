@@ -3,8 +3,6 @@
  *
  *  Generates thumbnails and slides continuously through slides.
  *
- *  @TODO: bug fix - active class being set to cloned list elements
- *
  *  Options:
  *  - max_number_slides (integer): max number of slides and thumbs
  *  - auto_slide (boolean): whether to auto slide
@@ -25,12 +23,14 @@
   var defaults = {
     max_slide_thumbs: 5,
     auto_slide: true,
-    auto_slide_speed: 400,
-    auto_slide_delay: 3000,
+    auto_slide_speed: 700,
+    auto_slide_delay: 2000,
     max_slide_height: 400,
     active_class: "is-active",
     previous_button_class: "c-banner-slider__button-previous",
     next_button_class: "c-banner-slider__button-next",
+    pause_button_class: "c-banner-slider__button-pause",
+    play_button_class: "c-banner-slider__button-play",
     thumbs_class: "c-banner-slider-thumbs"
   };
 
@@ -49,32 +49,31 @@
       var self = this;
       var $el = $(this.element);
       var $ul = $el.find("ul");
-      var $first_slide = $ul.find("li:first-child");
-      var $last_slide = $ul.find("li:last-child");
       var slide_width = self.settings.max_slide_thumbs * 100.00;
       var slide_width_pc = 100.0 / self.settings.max_slide_thumbs;
       var slide_index = 0;
-      var new_slide_height = self.settings.max_slide_height;
       var thumbs_array = [];
       var tag_class_RE = /^[A-Za-z][-_A-Za-z0-9]+$/;
+      var resize_event;
 
 
       // Basic user validation
       // ==========================
+      // ensure class names are string and follow CSS BEM
+      function validateClassString($class) {
+        $.each($class, function (index, value) {
+          if (typeof self.settings[value] !== 'string' || self.settings[value].match(tag_class_RE) === null) {
+            return self.settings[value] = self._defaults[value];
+          }
+        });
+      }
 
-      // ensure class names are string
-      if (typeof self.settings.active_class !== 'string' || self.settings.active_class.match(tag_class_RE) === null) {
-        self.settings.active_class = self._defaults.active_class;
-      }
-      if (typeof self.settings.previous_button_class !== 'string' || self.settings.active_class.match(tag_class_RE) === null) {
-        self.settings.previous_button_class = self._defaults.previous_button_class;
-      }
-      if (typeof self.settings.next_button_class !== 'string' || self.settings.active_class.match(tag_class_RE) === null) {
-        self.settings.next_button_class = self._defaults.next_button_class;
-      }
-      if (typeof self.settings.thumbs_class !== 'string' || self.settings.active_class.match(tag_class_RE) === null) {
-        self.settings.thumbs_class = self._defaults.thumbs_class;
-      }
+      validateClassString([
+        "active_class",
+        "previous_button_class",
+        "next_button_class",
+        "thumbs_class"
+      ]);
 
       // ensure max slides is an integer and not greater than the default
       if (!$.isNumeric(self.settings.max_slide_thumbs) || (self.settings.max_slide_thumbs > self._defaults.max_slide_thumbs)) {
@@ -106,8 +105,10 @@
       $ul.find("li:nth-child(n+" + (self.settings.max_slide_thumbs + 1) + ")").remove();
 
       // Clone the first and last slide for smooth animation and remove the active class
-      $last_slide.clone().prependTo($ul).removeClass(self.settings.active_class);
+      var $first_slide = $ul.find("li:first-child");
+      var $last_slide = $ul.find("li:last-child");
       $first_slide.clone().appendTo($ul).removeClass(self.settings.active_class);
+      $last_slide.clone().prependTo($ul).removeClass(self.settings.active_class);
 
       // set the initial slide margin and width
       $ul.css({
@@ -136,36 +137,88 @@
         // Set the initial index to the element with "active" class
         if ($(this).hasClass(self.settings.active_class)) {
           self.settings.slide_index = index - 1;
-        }
-
-        // set the initial height of slide image height variable
-        if ($image.height() < new_slide_height) {
-          new_slide_height = $image.height();
-        }
-
-        // set the slide list height to the shortest slide image
-        if (new_slide_height < self.settings.max_slide_height) {
-          $el.css("height", new_slide_height);
-        }
-        else {
-          $el.css("height", self.settings.max_slide_height);
+          slide_index = self.settings.slide_index;
         }
 
       });
 
+      // Recalculate slide and thumb height after resize event
+      $(window).on("resize", function () {
+        clearTimeout(resize_event);
+        resize_event = setTimeout(function () {
+          self.setDimensions();
+        }, 250);
+      });
+
       // Build the thumbs first
       self.buildThumbs();
+      // Set the slide and thumb list heights
+      self.setDimensions();
       // Init the slide
       self.slide(slide_index);
+      // Listen for keyboard events
+      $(document).keydown(function(key) {
+        // clearInterval(auto_slide);
+        self.keyBoardEvent(key);
+      });
 
       // All the sliding
       // ==========================
+
+
+      // Auto Slide
+      // ==========================
+
+      var timer = null;
+      var $pauseButton = $("." + self.settings.pause_button_class);
+      var $playButton = $("." + self.settings.play_button_class);
+
+      function tick() {
+        self.slide(self.slide_index + 1);
+        start();        // restart the timer
+      }
+
+      function start() {  // use a one-off timer
+        timer = setTimeout(tick, self.settings.auto_slide_delay);
+        $el.removeClass("is_paused");
+      }
+
+      function stop() {
+        clearTimeout(timer);
+        $el.addClass("is_paused");
+      }
+
+      // show/hide the play/pause buttons and start timie
+      if (self.settings.auto_slide) {
+        $pauseButton.show();
+        $playButton.hide();
+        start();
+      }
+      else {
+        $playButton.show();
+        $pauseButton.hide();
+        stop();
+      }
+      $playButton.click(function() {
+        $(this).hide();
+        $pauseButton.show();
+        start();
+      });
+      $pauseButton.click(function() {
+        $(this).hide();
+        $playButton.show();
+        stop();
+      });
+
+      // ==========================
+
+
       // Autoslide
-      var auto_slide = setInterval(function () {
-        if (self.settings.auto_slide) {
-          self.slide(self.slide_index + 1);
-        }
-      }, self.settings.auto_slide_delay);
+      // var auto_slide = setInterval(function () {
+      //   if (self.settings.auto_slide) {
+      //     self.slide(self.slide_index + 1);
+      //   }
+      // }, self.settings.auto_slide_delay);
 
       // Prev/next buttons
       $("." + self.settings.previous_button_class).click(function () {
@@ -190,20 +243,19 @@
       });
 
       // Click a thumb
-      self.thumb_item.click(function () {
+      self.thumbs.find("li").click(function () {
         var thumb_index = $(this).index();
         self.slide(thumb_index);
+        self.setActive(thumb_index);
         clearInterval(auto_slide);
       });
+
     },
     slide: function (new_slide_index) {
       var self = this;
       var $el = $(this.element);
       var $ul = $el.find("ul");
       var margin_left_pc = (new_slide_index * (-100) - 100) + "%";
-
-      // Set the new active thumb before the animation starts
-      self.setActive(new_slide_index);
 
       $ul.animate({"margin-left": margin_left_pc}, self.settings.auto_slide_speed, function () {
         if (new_slide_index < 0) {
@@ -215,8 +267,9 @@
           $ul.css("margin-left", "-100%");
           new_slide_index = 0;
         }
-
         self.slide_index = new_slide_index;
+
+        self.setActive(new_slide_index);
 
         return this;
       });
@@ -225,28 +278,29 @@
       var self = this;
       var $el = $(this.element);
       var $ul = $el.find('ul');
-      self.thumb_item.each(function (i) {
+      var new_slide_index = new_index + 1;
+
+      self.thumbs.find("li").each(function (i) {
         if (i === new_index) {
-          self.thumb_item.removeClass(self.settings.active_class);
+          self.thumbs.find("li").removeClass(self.settings.active_class);
           $(this).addClass(self.settings.active_class);
         }
       });
-
       $ul.find("li").each(function (i) {
-        if (i === new_index) {
+        if (i === new_slide_index) {
           $ul.find("li").removeClass(self.settings.active_class);
           $(this).addClass(self.settings.active_class);
         }
       });
 
       self.slide_index = new_index;
+
       return this;
     },
     buildThumbs: function () {
       var self = this;
       var $el = $(this.element);
       var thumbs_array = self.thumbs_array;
-      var thumb_height = self.settings.max_slide_height;
 
       // Generate thumbs
       // ==========================
@@ -270,20 +324,60 @@
 
       $thumb_item.css("width", thumb_width + "%");
 
-      // set the height of each thumb image
-      $thumb_item.each(function () {
-        var image_height = $(this).find("img").height();
-        if (image_height < thumb_height) {
-          thumb_height = image_height;
-        }
-        $thumbs.css("height", thumb_height);
-      });
-
-      self.thumb_item = $thumb_item;
+      self.thumbs = $thumbs;
 
       return this;
-    }
+    },
+    setDimensions: function () {
+      var self = this;
+      var $el = $(this.element);
+      var $ul = $el.find('ul');
+      var thumb_height = self.settings.max_slide_height;
 
+      // Remove the style
+      $el.removeAttr("style");
+
+      // Set the height of the slide list
+      $ul.find("li").each(function () {
+        var $image = $(this).find('img');
+        var new_slide_height = self.settings.max_slide_height;
+
+        if ($image.height() < new_slide_height) {
+          new_slide_height = $image.height();
+        }
+        if (new_slide_height < self.settings.max_slide_height) {
+          $el.css("height", new_slide_height);
+        }
+        else {
+          $el.css("height", self.settings.max_slide_height);
+        }
+
+        // set the height of the thumb list
+        self.thumbs.find("li").each(function () {
+          var image_height = $(this).find("img").height();
+          if (image_height < thumb_height) {
+            thumb_height = image_height;
+          }
+          self.thumbs.css("height", thumb_height);
+        });
+      });
+      return this;
+    },
+    keyBoardEvent: function (key) {
+      var self = this;
+      var key_code = parseInt(key.which, 10);
+      switch (key_code) {
+        // left
+        case 37:
+          self.slide(self.slide_index - 1);
+          break;
+        // right
+        case 39:
+          self.slide(self.slide_index + 1);
+          break;
+      }
+      return this;
+    }
   });
 
   $.fn[pluginName] = function (options) {
