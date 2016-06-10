@@ -192,7 +192,10 @@
       // Build the thumbs first
       self.buildThumbs();
       // Set the slide and thumb list heights
-      self.setDimensions();
+      // wait for all images to load first
+      $(window).load(function() {
+        self.setDimensions();
+      });
       // Init the slide
       self.slide(slide_index);
       // Listen for keyboard events
