@@ -216,16 +216,18 @@
       });
 
       // Swipe
-      $el.swipe({
-        swipeLeft: function () {
-          self.slide(self.slide_index + 1);
-          stopAutoSlide();
-        },
-        swipeRight: function () {
-          self.slide(self.slide_index - 1);
-          stopAutoSlide();
-        }
-      });
+      if ($.fn.swipe) {
+        $el.swipe({
+          swipeLeft: function () {
+            self.slide(self.slide_index + 1);
+            stopAutoSlide();
+          },
+          swipeRight: function () {
+            self.slide(self.slide_index - 1);
+            stopAutoSlide();
+          }
+        });
+      }
 
       // Click a thumb
       self.thumbs.find("li").click(function () {
@@ -303,13 +305,7 @@
       // ==========================
 
       // variables defined after thumb markup generated
-      var $thumbs = $("." + self.settings.thumbs_class);
-      var $thumb_item = $thumbs.find("li");
-      var thumb_width = 100.0 / self.settings.max_slide_thumbs;
-
-      $thumb_item.css("width", thumb_width + "%");
-
-      self.thumbs = $thumbs;
+      self.thumbs = $("." + self.settings.thumbs_class);
 
       return this;
     },
@@ -318,6 +314,9 @@
       var $el = $(this.element);
       var $ul = $el.find('ul');
       var thumb_height = self.settings.max_slide_height;
+      var $thumbs = self.thumbs;
+      var $thumb_item = $thumbs.find("li");
+      var thumb_width = 100.0 / self.settings.max_slide_thumbs;
 
       // Remove the style
       $el.removeAttr("style");
@@ -343,8 +342,13 @@
           if (image_height < thumb_height) {
             thumb_height = image_height;
           }
-          self.thumbs.css("height", thumb_height);
+          self.thumbs.css({
+            "height": thumb_height,
+            "width": $el.width()
+          });
         });
+        // Set the width of each thumb
+        $thumb_item.css("width", thumb_width + "%");
       });
       return this;
     },
