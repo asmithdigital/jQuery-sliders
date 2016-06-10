@@ -36,6 +36,8 @@
         <div class="content"><a href="http://imageslidermaker.com">Slide Two</a></div>
       </li>
     </ul>
+    <button class="play">play</button>
+    <button class="pause">pause</button>
     <button class="prev">prev</button>
     <button class="next">next</button>
   </div>
@@ -55,7 +57,10 @@
     $('.slider').ua_slidie({
       active_class: "active",
       next_button_class: "next",
-      previous_button_class: "prev"
+      previous_button_class: "prev",
+      pause_button_class: "pause",
+      play_button_class: "play",
+      thumbs_class: "thumbs"
     });
 
   });
