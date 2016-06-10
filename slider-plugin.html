@@ -44,7 +44,7 @@
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')</script>
-<script src="bower_components/jquery-touchswipe/jquery.touchSwipe.js"></script>
+<script src="app/bower_components/jquery-touchswipe/jquery.touchSwipe.js"></script>
 <script src="js/jquery.slider.js"></script>
 
 <script>
@@ -52,8 +52,10 @@
   $(function() {
     'use strict';
 
-    $('.slider').slidie({
-      //active_class: "yolo"
+    $('.slider').ua_slidie({
+      active_class: "active",
+      next_button_class: "next",
+      previous_button_class: "prev"
     });
 
   });
