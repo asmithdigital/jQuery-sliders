@@ -66,13 +66,31 @@
         self.slide(self.slide_index + 1);
         startAutoSlide();
       }
-      function startAutoSlide() {  // use a one-off timer
+      function startAutoSlide() {
         autoTimer = setTimeout(autoSlide, self.settings.auto_slide_delay);
       }
       function stopAutoSlide() {
         clearTimeout(autoTimer);
         $playButton.show();
         $pauseButton.hide();
+      }
+
+      // Keyboard arrows slide function
+      // ==========================
+      function keyBoardEvent(key) {
+        var key_code = parseInt(key.which, 10);
+        switch (key_code) {
+          // left
+          case 37:
+            stopAutoSlide();
+            self.slide(self.slide_index - 1);
+            break;
+          // right
+          case 39:
+            stopAutoSlide();
+            self.slide(self.slide_index + 1);
+            break;
+        }
       }
 
       // Basic user validation
@@ -177,8 +195,7 @@
       self.slide(slide_index);
       // Listen for keyboard events
       $(document).keydown(function (key) {
-        // stopAutoSlide();
-        self.keyBoardEvent(key);
+        keyBoardEvent(key);
       });
 
       // All the sliding
@@ -354,21 +371,6 @@
       // Set the width of each thumb
       $thumb_item.css("width", thumb_width + "%");
 
-      return this;
-    },
-    keyBoardEvent: function (key) {
-      var self = this;
-      var key_code = parseInt(key.which, 10);
-      switch (key_code) {
-        // left
-        case 37:
-          self.slide(self.slide_index - 1);
-          break;
-        // right
-        case 39:
-          self.slide(self.slide_index + 1);
-          break;
-      }
       return this;
     }
   });
