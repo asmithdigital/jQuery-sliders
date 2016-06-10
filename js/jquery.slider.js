@@ -314,17 +314,20 @@
       var $el = $(this.element);
       var $ul = $el.find('ul');
       var thumb_height = self.settings.max_slide_height;
+      var new_slide_height = self.settings.max_slide_height;
       var $thumbs = self.thumbs;
+      var $thumbsUl = $("." + self.settings.thumbs_class + "__list");
       var $thumb_item = $thumbs.find("li");
       var thumb_width = 100.0 / self.settings.max_slide_thumbs;
+      var $elWidth = $el[0].getBoundingClientRect().width;
 
       // Remove the style
       $el.removeAttr("style");
+      $thumbs.removeAttr("style");
 
       // Set the height of the slide list
       $ul.find("li").each(function () {
         var $image = $(this).find('img');
-        var new_slide_height = self.settings.max_slide_height;
 
         if ($image.height() < new_slide_height) {
           new_slide_height = $image.height();
@@ -335,21 +338,22 @@
         else {
           $el.css("height", self.settings.max_slide_height);
         }
-
-        // set the height of the thumb list
-        self.thumbs.find("li").each(function () {
-          var image_height = $(this).find("img").height();
-          if (image_height < thumb_height) {
-            thumb_height = image_height;
-          }
-          self.thumbs.css("height", thumb_height);
-        });
-
-        // Set the width of the thumbs list to match the slide window
-        $("." + self.settings.thumbs_class + "__list").css("width", $el[0].getBoundingClientRect().width);
-        // Set the width of each thumb
-        $thumb_item.css("width", thumb_width + "%");
       });
+
+      // set the height of the thumb list
+      self.thumbs.find("li").each(function () {
+        var $image = $(this).find('img');
+        if ($image.height() < thumb_height) {
+          thumb_height = $image.height();
+        }
+        self.thumbs.css("height", thumb_height);
+      });
+
+      // Set the width of the thumbs list to match the slide window
+      $thumbsUl.css("width", $elWidth);
+      // Set the width of each thumb
+      $thumb_item.css("width", thumb_width + "%");
+
       return this;
     },
     keyBoardEvent: function (key) {
