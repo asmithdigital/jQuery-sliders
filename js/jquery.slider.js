@@ -342,11 +342,11 @@
           if (image_height < thumb_height) {
             thumb_height = image_height;
           }
-          self.thumbs.css({
-            "height": thumb_height,
-            "width": $el.width()
-          });
+          self.thumbs.css("height", thumb_height);
         });
+
+        // Set the width of the thumbs list to match the slide window
+        $("." + self.settings.thumbs_class + "__list").css("width", $el[0].getBoundingClientRect().width);
         // Set the width of each thumb
         $thumb_item.css("width", thumb_width + "%");
       });
