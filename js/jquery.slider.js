@@ -79,18 +79,20 @@
       // ==========================
       function keyBoardEvent(key) {
         var key_code = parseInt(key.which, 10);
+        var key_slide;
         switch (key_code) {
           // left
           case 37:
             stopAutoSlide();
-            self.slide(self.slide_index - 1);
+            key_slide = self.slide(self.slide_index - 1);
             break;
           // right
           case 39:
             stopAutoSlide();
-            self.slide(self.slide_index + 1);
+            key_slide = self.slide(self.slide_index + 1);
             break;
         }
+        return key_slide;
       }
 
       // Basic user validation
