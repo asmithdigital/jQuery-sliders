@@ -34,6 +34,7 @@
     thumbs_class: "c-banner-slider-thumbs"
   };
 
+
   // The actual plugin constructor
   function Plugin(element, options) {
     this.element = element;
@@ -55,7 +56,24 @@
       var thumbs_array = [];
       var tag_class_RE = /^[A-Za-z][-_A-Za-z0-9]+$/;
       var resize_event;
+      var autoTimer = null;
+      var $pauseButton = $("." + self.settings.pause_button_class);
+      var $playButton = $("." + self.settings.play_button_class);
 
+      // Auto Slide functions
+      // ==========================
+      function autoSlide() {
+        self.slide(self.slide_index + 1);
+        startAutoSlide();
+      }
+      function startAutoSlide() {  // use a one-off timer
+        autoTimer = setTimeout(autoSlide, self.settings.auto_slide_delay);
+      }
+      function stopAutoSlide() {
+        clearTimeout(autoTimer);
+        $playButton.show();
+        $pauseButton.hide();
+      }
 
       // Basic user validation
       // ==========================
@@ -63,7 +81,8 @@
       function validateClassString($class) {
         $.each($class, function (index, value) {
           if (typeof self.settings[value] !== 'string' || self.settings[value].match(tag_class_RE) === null) {
-            return self.settings[value] = self._defaults[value];
+            var resetClass = self.settings[value] = self._defaults[value];
+            return resetClass;
           }
         });
       }
@@ -157,88 +176,54 @@
       // Init the slide
       self.slide(slide_index);
       // Listen for keyboard events
-      $(document).keydown(function(key) {
-        // clearInterval(auto_slide);
+      $(document).keydown(function (key) {
+        // stopAutoSlide();
         self.keyBoardEvent(key);
       });
 
       // All the sliding
       // ==========================
-
-
-      // Auto Slide
-      // ==========================
-
-      var timer = null;
-      var $pauseButton = $("." + self.settings.pause_button_class);
-      var $playButton = $("." + self.settings.play_button_class);
-
-      function tick() {
-        self.slide(self.slide_index + 1);
-        start();        // restart the timer
-      }
-
-      function start() {  // use a one-off timer
-        timer = setTimeout(tick, self.settings.auto_slide_delay);
-        $el.removeClass("is_paused");
-      }
-
-      function stop() {
-        clearTimeout(timer);
-        $el.addClass("is_paused");
-      }
-
-      // show/hide the play/pause buttons and start timie
+      // show/hide the play/pause buttons and start/pause autoSlide
       if (self.settings.auto_slide) {
         $pauseButton.show();
         $playButton.hide();
-        start();
+        startAutoSlide();
       }
       else {
         $playButton.show();
         $pauseButton.hide();
-        stop();
+        stopAutoSlide();
       }
-      $playButton.click(function() {
+      $playButton.click(function () {
         $(this).hide();
         $pauseButton.show();
-        start();
+        startAutoSlide();
       });
-      $pauseButton.click(function() {
+      $pauseButton.click(function () {
         $(this).hide();
         $playButton.show();
-        stop();
+        stopAutoSlide();
       });
-
-      // ==========================
-
-
-      // Autoslide
-      // var auto_slide = setInterval(function () {
-      //   if (self.settings.auto_slide) {
-      //     self.slide(self.slide_index + 1);
-      //   }
-      // }, self.settings.auto_slide_delay);
 
       // Prev/next buttons
       $("." + self.settings.previous_button_class).click(function () {
         self.slide(self.slide_index - 1);
-        clearInterval(auto_slide);
+        stopAutoSlide();
       });
       $("." + self.settings.next_button_class).click(function () {
         self.slide(self.slide_index + 1);
-        clearInterval(auto_slide);
+        stopAutoSlide();
       });
 
       // Swipe
       $el.swipe({
         swipeLeft: function () {
           self.slide(self.slide_index + 1);
-          clearInterval(auto_slide);
+          stopAutoSlide();
         },
         swipeRight: function () {
           self.slide(self.slide_index - 1);
-          clearInterval(auto_slide);
+          stopAutoSlide();
         }
       });
 
@@ -247,7 +232,7 @@
         var thumb_index = $(this).index();
         self.slide(thumb_index);
         self.setActive(thumb_index);
-        clearInterval(auto_slide);
+        stopAutoSlide();
       });
 
     },
